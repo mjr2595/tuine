@@ -1,15 +1,13 @@
-# tuine 🎵
+# tuine
 
 A terminal UI for streaming YouTube audio. Built with Bun, React (Ink), and yt-dlp.
 
 ## Features
 
-- 🎧 Stream audio from YouTube URLs
-- 📥 Progressive playback (starts playing while downloading)
-- 📋 Queue management
-- 💾 Smart caching for offline playback
-- ⌨️ Keyboard controls
-- 🎨 Clean terminal interface
+- Stream audio from YouTube URLs
+- Progressive playback (starts playing while downloading)
+- Queue management
+- Smart caching for offline playback
 
 ## Requirements
 
@@ -43,20 +41,21 @@ Or run in development mode with hot reload:
 bun dev
 ```
 
+Check system requirements:
+
+```bash
+bun start --check
+```
+
+This will verify all dependencies and show their status without starting the player.
+
 ## How to Use
 
 1. Paste a YouTube URL in the input field and press Enter
 2. The audio will start downloading and play automatically
 3. Add more URLs to build a queue
 4. Use keyboard shortcuts to control playback
-
-### Keyboard Controls
-
-- **Space** - Pause/Play (stops current track)
-- **n** - Next track
-- **p** - Previous track
-- **c** - Clear queue
-- **q** - Quit application
+5. Optionally save and load playlists
 
 ## How It Works
 
@@ -72,10 +71,6 @@ Audio files are cached at: `~/.tuine/cache/`
 
 To clear the cache, delete this directory or use the cache management features (coming soon).
 
-## Legal Notice
-
-⚠️ **Important**: Downloading videos from YouTube may violate YouTube's Terms of Service. This tool is intended for personal, educational use only. Users are responsible for complying with applicable laws and terms of service. Do not redistribute downloaded content.
-
 ## Technical Stack
 
 - **Runtime**: Bun v1.0+
@@ -83,29 +78,6 @@ To clear the cache, delete this directory or use the cache management features (
 - **Audio Extraction**: yt-dlp
 - **Audio Playback**: ffplay (via FFmpeg) or afplay (macOS)
 - **Language**: TypeScript
-
-## Project Structure
-
-```
-tuine/
-├── src/
-│   ├── components/     # React/Ink UI components
-│   │   ├── App.tsx           # Main application component
-│   │   ├── NowPlaying.tsx    # Current track display
-│   │   ├── QueueList.tsx     # Queue visualization
-│   │   ├── Controls.tsx      # Keyboard shortcuts help
-│   │   └── UrlInput.tsx      # URL input field
-│   ├── services/       # Core business logic
-│   │   ├── cache.ts          # File caching
-│   │   ├── downloader.ts     # yt-dlp wrapper
-│   │   ├── player.ts         # Audio playback
-│   │   └── queue.ts          # Queue management
-│   ├── utils/          # Utilities
-│   │   └── system.ts         # System requirements check
-│   └── types.ts        # TypeScript type definitions
-├── index.ts            # Entry point
-└── package.json
-```
 
 ## Troubleshooting
 
@@ -129,14 +101,7 @@ Install ffmpeg with: `brew install ffmpeg`
 - Verify the YouTube URL is valid
 - Some videos may be restricted or unavailable
 
-## Contributing
+#### PRs are welcome
 
-This is a personal project, but suggestions and improvements are welcome!
-
-## License
-
-MIT
-
----
-
-Built with [Bun](https://bun.sh) 🥟
+> [!IMPORTANT]  
+> Downloading videos from YouTube may violate YouTube's Terms of Service. This tool is intended for personal, educational use only. Users are responsible for complying with applicable laws and terms of service. Do not redistribute downloaded content.

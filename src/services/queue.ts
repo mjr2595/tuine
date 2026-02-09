@@ -21,6 +21,9 @@ const youtubeUrlSchema = z.string().refine(
 export class QueueManager {
   private queue: Track[] = [];
   private currentIndex: number = -1;
+  private shuffleEnabled: boolean = false;
+  private shuffleHistory: number[] = [];
+  private unplayedIndices: number[] = [];
 
   add(url: string): { success: boolean; error?: string; videoId?: string } {
     const validation = youtubeUrlSchema.safeParse(url);
@@ -55,6 +58,11 @@ export class QueueManager {
       this.currentIndex = 0;
     }
 
+    // Add to unplayed indices if shuffle is enabled
+    if (this.shuffleEnabled) {
+      this.unplayedIndices.push(this.queue.length - 1);
+    }
+
     return { success: true, videoId };
   }
 
@@ -74,19 +82,48 @@ export class QueueManager {
   }
 
   next(): Track | null {
-    if (this.currentIndex < this.queue.length - 1) {
-      this.currentIndex++;
-      return this.queue[this.currentIndex] || null;
+    if (this.shuffleEnabled) {
+      // Shuffle mode: pick random from unplayed indices
+      if (this.unplayedIndices.length > 0) {
+        const randomIdx = Math.floor(
+          Math.random() * this.unplayedIndices.length,
+        );
+        const nextIndex = this.unplayedIndices[randomIdx]!;
+        this.unplayedIndices.splice(randomIdx, 1);
+        this.shuffleHistory.push(this.currentIndex);
+        this.currentIndex = nextIndex;
+        return this.queue[this.currentIndex] || null;
+      }
+      // No more unplayed tracks
+      return null;
+    } else {
+      // Normal mode: sequential
+      if (this.currentIndex < this.queue.length - 1) {
+        this.currentIndex++;
+        return this.queue[this.currentIndex] || null;
+      }
+      return null;
     }
-    return null;
   }
 
   previous(): Track | null {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-      return this.queue[this.currentIndex] || null;
+    if (this.shuffleEnabled) {
+      // Shuffle mode: go back in history
+      if (this.shuffleHistory.length > 0) {
+        const prevIndex = this.shuffleHistory.pop()!;
+        this.unplayedIndices.push(this.currentIndex);
+        this.currentIndex = prevIndex;
+        return this.queue[this.currentIndex] || null;
+      }
+      return null;
+    } else {
+      // Normal mode: sequential
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        return this.queue[this.currentIndex] || null;
+      }
+      return null;
     }
-    return null;
   }
 
   getCurrent(): Track | null {
@@ -114,14 +151,47 @@ export class QueueManager {
   clear(): void {
     this.queue = [];
     this.currentIndex = -1;
+    this.shuffleHistory = [];
+    this.unplayedIndices = [];
   }
 
   hasNext(): boolean {
+    if (this.shuffleEnabled) {
+      return this.unplayedIndices.length > 0;
+    }
     return this.currentIndex < this.queue.length - 1;
   }
 
   hasPrevious(): boolean {
+    if (this.shuffleEnabled) {
+      return this.shuffleHistory.length > 0;
+    }
     return this.currentIndex > 0;
+  }
+
+  toggleShuffle(): boolean {
+    this.shuffleEnabled = !this.shuffleEnabled;
+
+    if (this.shuffleEnabled) {
+      // Initialize unplayed indices with all tracks except current
+      this.unplayedIndices = [];
+      for (let i = 0; i < this.queue.length; i++) {
+        if (i !== this.currentIndex) {
+          this.unplayedIndices.push(i);
+        }
+      }
+      this.shuffleHistory = [];
+    } else {
+      // Clear shuffle state
+      this.unplayedIndices = [];
+      this.shuffleHistory = [];
+    }
+
+    return this.shuffleEnabled;
+  }
+
+  isShuffleEnabled(): boolean {
+    return this.shuffleEnabled;
   }
 
   private extractVideoId(url: string): string | null {

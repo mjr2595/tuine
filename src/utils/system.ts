@@ -1,4 +1,15 @@
 import { spawn } from "bun";
+import { homedir } from "node:os";
+import { join } from "node:path";
+
+export function getDataDir(): string {
+  // Use XDG_DATA_HOME if set, otherwise use ~/.local/share (Linux/macOS)
+  const xdgDataHome = process.env.XDG_DATA_HOME;
+  if (xdgDataHome) {
+    return join(xdgDataHome, "tuine");
+  }
+  return join(homedir(), ".local", "share", "tuine");
+}
 
 export interface SystemCheck {
   ytdlp: boolean;

@@ -37,3 +37,17 @@ export interface VideoMetadata {
   duration: number;
   ext: string;
 }
+
+export interface PlaylistTrack {
+  url: string;
+  videoId: string;
+  title: string;
+  duration?: number;
+}
+
+export interface Playlist {
+  name: string;
+  tracks: PlaylistTrack[];
+  createdAt: string;
+  updatedAt: string;
+}

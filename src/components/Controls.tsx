@@ -29,6 +29,15 @@ export const Controls: React.FC = () => {
           <Text bold>c</Text> - Clear queue
         </Text>
         <Text dimColor>
+          <Text bold>s</Text> - Save current queue as playlist
+        </Text>
+        <Text dimColor>
+          <Text bold>l</Text> - Load playlist
+        </Text>
+        <Text dimColor>
+          <Text bold>r</Text> - Toggle shuffle mode
+        </Text>
+        <Text dimColor>
           <Text bold>q</Text> - Quit
         </Text>
       </Box>
