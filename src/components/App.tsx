@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Text, useInput, useApp } from "ink";
+import { Box, Text, useInput, useApp, useStdout } from "ink";
 import { NowPlaying } from "./NowPlaying";
 import { QueueList } from "./QueueList";
 import { Controls } from "./Controls";
@@ -19,6 +19,7 @@ interface AppProps {
 
 export const App: React.FC<AppProps> = ({ playerType }) => {
   const { exit } = useApp();
+  const { stdout } = useStdout();
   const [queue] = useState(() => new QueueManager());
   const [player] = useState(() => new Player({ playerType }));
   const [downloader] = useState(() => new Downloader());
@@ -327,6 +328,9 @@ export const App: React.FC<AppProps> = ({ playerType }) => {
       handleToggleShuffle();
     }
   });
+  // Determine if we have enough width for side-by-side layout
+  const terminalWidth = stdout?.columns || 80;
+  const useSideBySideLayout = terminalWidth >= 100;
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -364,18 +368,27 @@ export const App: React.FC<AppProps> = ({ playerType }) => {
         </Text>
       </Box>
 
-      <NowPlaying
-        track={currentTrack}
-        progress={
-          currentTrack?.status === "downloading"
-            ? downloadProgress
-            : currentTrack?.status === "playing"
-              ? playbackProgress
-              : 0
-        }
-      />
+      <Box flexDirection={useSideBySideLayout ? "row" : "column"}>
+        <Box
+          flexGrow={useSideBySideLayout ? 1 : undefined}
+          marginRight={useSideBySideLayout ? 1 : 0}
+        >
+          <NowPlaying
+            track={currentTrack}
+            progress={
+              currentTrack?.status === "downloading"
+                ? downloadProgress
+                : currentTrack?.status === "playing"
+                  ? playbackProgress
+                  : 0
+            }
+          />
+        </Box>
 
-      <QueueList tracks={tracks} currentIndex={currentIndex} />
+        <Box flexGrow={useSideBySideLayout ? 1 : undefined}>
+          <QueueList tracks={tracks} currentIndex={currentIndex} />
+        </Box>
+      </Box>
 
       {showControls && <Controls />}
 

@@ -18,6 +18,7 @@ export const NowPlaying: React.FC<NowPlayingProps> = ({
         paddingY={1}
         borderStyle="round"
         borderColor="gray"
+        width="100%"
       >
         <Box paddingX={2}>
           <Text dimColor>No track playing</Text>
@@ -55,6 +56,7 @@ export const NowPlaying: React.FC<NowPlayingProps> = ({
       paddingY={1}
       borderStyle="round"
       borderColor="green"
+      width="100%"
     >
       <Box paddingX={2} flexDirection="column">
         <Box>

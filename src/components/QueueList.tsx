@@ -33,6 +33,7 @@ export const QueueList: React.FC<QueueListProps> = ({
       paddingY={1}
       borderStyle="round"
       borderColor="blue"
+      width="100%"
     >
       <Box paddingX={2}>
         <Text bold color="blue">
