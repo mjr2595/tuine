@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "bun --hot index.tsx",
-    "start": "bun index.tsx"
+    "start": "bun index.tsx",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "ink": "^4.4.1",
@@ -17,7 +19,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^18.2.0"
+    "@types/react": "^18.2.0",
+    "ink-testing-library": "^4.0.0"
   },
   "peerDependencies": {
     "typescript": "^5"

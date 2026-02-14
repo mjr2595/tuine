@@ -5,11 +5,13 @@ import type { Track } from "../types";
 interface NowPlayingProps {
   track: Track | null;
   progress?: number; // Download percentage (0-100) or playback seconds elapsed
+  isPaused?: boolean;
 }
 
 export const NowPlaying: React.FC<NowPlayingProps> = ({
   track,
   progress = 0,
+  isPaused = false,
 }) => {
   if (!track) {
     return (
@@ -46,7 +48,7 @@ export const NowPlaying: React.FC<NowPlayingProps> = ({
     pending: "⏸",
     downloading: "⬇",
     ready: "▶",
-    playing: "▶",
+    playing: isPaused ? "⏸" : "▶",
     error: "❌",
   };
 

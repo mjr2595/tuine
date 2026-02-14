@@ -26,6 +26,7 @@ export class Player {
     filePath: string,
     onFinish?: () => void,
     onProgress?: (seconds: number) => void,
+    startOffset: number = 0,
   ): Promise<void> {
     // Stop any current playback
     this.stop();
@@ -43,7 +44,8 @@ export class Player {
     await this.waitForPlayableContent(filePath);
 
     this.state = "playing";
-    this.startTime = Date.now();
+    // Adjust startTime so elapsed calculation accounts for the offset
+    this.startTime = Date.now() - startOffset * 1000;
 
     // Start progress tracking
     this.progressInterval = setInterval(() => {
@@ -55,15 +57,17 @@ export class Player {
 
     try {
       if (this.playerType === "ffplay") {
-        this.currentProcess = spawn(
-          ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet", filePath],
-          {
-            stdout: "pipe",
-            stderr: "pipe",
-          },
-        );
+        const args = ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet"];
+        if (startOffset > 0) {
+          args.push("-ss", String(startOffset));
+        }
+        args.push(filePath);
+        this.currentProcess = spawn(args, {
+          stdout: "pipe",
+          stderr: "pipe",
+        });
       } else {
-        // afplay
+        // afplay - no seek support, will restart from beginning
         this.currentProcess = spawn(["afplay", filePath], {
           stdout: "pipe",
           stderr: "pipe",
