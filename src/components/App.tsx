@@ -203,7 +203,7 @@ export const App: React.FC<AppProps> = ({ playerType }) => {
   const handlePlayPause = () => {
     if (player.isPlaying()) {
       player.stop();
-      setPlaybackState("idle");
+      setPlaybackState("paused");
     } else {
       playNext();
     }
@@ -382,6 +382,7 @@ export const App: React.FC<AppProps> = ({ playerType }) => {
                   ? playbackProgress
                   : 0
             }
+            isPaused={playbackState === "paused"}
           />
         </Box>
 
