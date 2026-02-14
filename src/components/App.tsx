@@ -10,7 +10,7 @@ import { QueueManager } from "../services/queue";
 import { Player, type PlayerType } from "../services/player";
 import { Downloader } from "../services/downloader";
 import { PlaylistManager as PlaylistService } from "../services/playlist";
-import { isCached, getCachedPath } from "../services/cache";
+import { getCachedPath } from "../services/cache";
 import { fetchMetadata } from "../services/metadata";
 
 interface AppProps {
@@ -200,10 +200,44 @@ export const App: React.FC<AppProps> = ({ playerType }) => {
     }
   };
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (player.isPlaying()) {
       player.stop();
       setPlaybackState("paused");
+    } else if (
+      playbackState === "paused" &&
+      currentTrack?.status === "playing" &&
+      currentTrack.filePath
+    ) {
+      // Resume from where we left off
+      const resumeFrom = playbackProgress;
+      try {
+        await player.play(
+          currentTrack.filePath,
+          () => {
+            // Auto-advance to next track when finished
+            if (queue.hasNext()) {
+              queue.next();
+              refreshQueue();
+              setPlaybackProgress(0);
+              playNext();
+            } else {
+              setPlaybackState("idle");
+            }
+          },
+          (seconds) => {
+            setPlaybackProgress(seconds);
+          },
+          resumeFrom,
+        );
+        setPlaybackState("playing");
+      } catch (error) {
+        queue.updateTrack(currentTrack.videoId, {
+          status: "error",
+          error: error instanceof Error ? error.message : "Playback error",
+        });
+        refreshQueue();
+      }
     } else {
       playNext();
     }
